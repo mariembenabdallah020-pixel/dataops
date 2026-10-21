@@ -17,9 +17,22 @@ class DataQualityError(Exception):
 
 def check_schema(df):
     """Stop if a required column is missing or if the file is empty."""
-    pass
+    missing = [col for col in REQUIRED_COLUMNS if col not in df.columns]
 
+    if missing:
+        raise DataQualityError(f"Missing columns: {missing}")
+
+    if len(df) == 0:
+        raise DataQualityError("The file contains no rows")
+    
 
 def check_reject_rate(n_total, n_rejected, max_rate=MAX_REJECT_RATE):
     """Stop if too large a share of the rows was rejected."""
-    pass
+    rate = n_rejected / n_total
+
+    if rate > max_rate:
+        raise DataQualityError(
+            f"Reject rate too high: {rate:.0%} "
+            f"({n_rejected}/{n_total} rows rejected, "
+            f"limit: {max_rate:.0%})"
+        )
