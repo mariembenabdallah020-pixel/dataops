@@ -3,3 +3,11 @@ __pycache__/
 .pytest_cache/
 data/output/
 data/rejected/
+# DuckDB
+warehouse.duckdb
+warehouse.duckdb.wal
+
+# dbt
+target/
+logs/
+.user.yml
