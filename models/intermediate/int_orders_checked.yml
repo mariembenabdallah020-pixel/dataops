@@ -1,0 +1,53 @@
+version: 2
+
+unit_tests:
+  - name: test_unknown_country_is_rejected
+    model: int_orders_checked
+    given:
+      - input: ref('stg_orders')
+        rows:
+          - order_id: "2001"
+            order_date: "2026-10-10"
+            customer_id: "C001"
+            country: "Spain"
+            product: "Laptop"
+            quantity: 2
+            unit_price: 500.0
+            _row_number: 1
+    expect:
+      rows:
+        - order_id: "2001"
+          reject_reason: "unknown_country"
+
+  - name: test_duplicate_order_keeps_the_first
+    model: int_orders_checked
+    given:
+      - input: ref('stg_orders')
+        rows:
+          - order_id: "2002"
+            order_date: "2026-10-10"
+            customer_id: "C001"
+            country: "Tunisia"
+            product: "Laptop"
+            quantity: 2
+            unit_price: 500.0
+            _row_number: 1
+
+          - order_id: "2002"
+            order_date: "2026-10-11"
+            customer_id: "C002"
+            country: "France"
+            product: "Mouse"
+            quantity: 1
+            unit_price: 50.0
+            _row_number: 2
+
+    expect:
+      rows:
+        - order_id: "2002"
+          duplicate_rank: 1
+          reject_reason: null
+
+        - order_id: "2002"
+          duplicate_rank: 2
+          reject_reason: "duplicate_order_id"
